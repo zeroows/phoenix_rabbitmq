@@ -10,7 +10,7 @@ defmodule Phoenix.RabbitMQServer do
   @moduledoc """
   `Phoenix.PubSub` adapter for RabbitMQ
 
-  See `Phoenix.PubSub.RabbitMQ` for details and configuration options.
+  See `Phoenix.RabbitMQ` for details and configuration options.
   """
 
   def start_link(server_name, conn_pool_name, pub_pool_name, opts) do

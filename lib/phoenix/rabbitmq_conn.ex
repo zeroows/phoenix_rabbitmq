@@ -12,7 +12,7 @@ defmodule Phoenix.RabbitMQConn do
   @doc """
   Starts the server
 
-  See `Phoenix.PubSub.RabbitMQ` for details and configuration options.
+  See `Phoenix.RabbitMQ` for details and configuration options.
   """
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts)

@@ -5,6 +5,7 @@ defmodule Phoenix.RabbitMQ do
 
   @pool_size 10
 
+
   @moduledoc """
   The Supervisor for the RabbitMQ Client
 
@@ -13,8 +14,8 @@ defmodule Phoenix.RabbitMQ do
   next, add `:phoenix_rabbitmq` to your deps:
 
       defp deps do
-        [{:amqp, "~> 0.1.0"},
-         {:poolboy, "~> 1.4.2"},
+        [
+         {:phoenix_rabbitmq, git: "git://github.com/zeroows/phoenix_rabbitmq.git"},
         ...]
       end
 
