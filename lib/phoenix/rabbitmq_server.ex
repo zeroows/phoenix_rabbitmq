@@ -81,6 +81,10 @@ defmodule Phoenix.RabbitMQServer do
     end
   end
 
+  def handle_call({:checkout, _from_pid, _stat}, _from, state) do
+    
+  end
+
   def handle_call({:broadcast, from_pid, topic, msg}, _from, state) do
     case RabbitMQ.publish(state.pub_pool_name,
                           state.exchange,

@@ -38,6 +38,11 @@ defmodule Phoenix.RabbitMQ do
       * `connection_timeout` - The connection timeout in milliseconds (defaults to `infinity`);
       * `pool_size` - Number of active connections to the broker
 
+  To Test it in iex:
+  ```Elixir
+  Phoenix.RabbitMQ.start_link(:test, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
+  Phoenix.RabbitMQ.publish :"Elixir.Phoenix.RabbitMQ.PubPool.test", "test", "", "testing plugin"
+  ```
   """
 
   def start_link(name, opts \\ []) do
@@ -79,18 +84,20 @@ defmodule Phoenix.RabbitMQ do
     end
   end
 
+  def publish(pool_name, exchange, routing_key, payload, options \\ []) do
+    case get_chan(pool_name, 0, @pool_size) do
+      {:ok, chan}      -> Basic.publish(chan, exchange, routing_key, payload, options)
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  ## Private 
+
   defp get_conn(pool_name, retry_count, max_retry_count) do
     case :poolboy.transaction(pool_name, &GenServer.call(&1, :conn)) do
       {:ok, conn}      -> {:ok, conn}
       {:error, _reason} when retry_count < max_retry_count ->
         get_conn(pool_name, retry_count + 1, max_retry_count)
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  def publish(pool_name, exchange, routing_key, payload, options \\ []) do
-    case get_chan(pool_name, 0, @pool_size) do
-      {:ok, chan}      -> Basic.publish(chan, exchange, routing_key, payload,options)
       {:error, reason} -> {:error, reason}
     end
   end
