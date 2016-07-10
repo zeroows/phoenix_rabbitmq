@@ -3,11 +3,11 @@ defmodule RabbitMQ do
 
   defmacro __using__(_opts) do
     quote do
-      alias Phoenix.RabbitMQ
-      alias Phoenix.RabbitMQConn
-      alias Phoenix.RabbitMQConsumer
-      alias Phoenix.RabbitMQPub
-      alias Phoenix.RabbitMQServer
+      alias Phoenix.RabbitMQ.RabbitMQ
+      alias Phoenix.RabbitMQ.Conn
+      alias Phoenix.RabbitMQ.Consumer
+      alias Phoenix.RabbitMQ.Publisher
+      alias Phoenix.RabbitMQ.Server
     end
   end
 end

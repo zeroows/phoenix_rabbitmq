@@ -18,17 +18,18 @@ finally, add `:phoenix_rabbitmq` to your applications:
          ...]
       end
 
-* `name` - The required name to register the PoolName processes, ie: `PoolName`
-* `options` - The optional RabbitMQ options:
-* `host` - The hostname of the broker (defaults to \"localhost\");
-* `port` - The port the broker is listening on (defaults to `5672`);
-* `username` - The name of a user registered with the broker (defaults to \"guest\");
-* `password` - The password of user (defaults to \"guest\");
-* `virtual_host` - The name of a virtual host in the broker (defaults to \"/\");
-* `heartbeat` - The hearbeat interval in seconds (defaults to `0` - turned off);
-* `connection_timeout` - The connection timeout in milliseconds (defaults to `infinity`);
-* `pool_size` - Number of active connections to the broker
+###### `name` - The required name to register the PoolName processes, ie: `PoolName`
+###### `options` - The optional RabbitMQ options:
+  * `host` - The hostname of the broker (defaults to \"localhost\");
+  * `port` - The port the broker is listening on (defaults to `5672`);
+  * `username` - The name of a user registered with the broker (defaults to \"guest\");
+  * `password` - The password of user (defaults to \"guest\");
+  * `virtual_host` - The name of a virtual host in the broker (defaults to \"/\");
+  * `heartbeat` - The hearbeat interval in seconds (defaults to `0` - turned off);
+  * `connection_timeout` - The connection timeout in milliseconds (defaults to `infinity`);
+  * `pool_size` - Number of active connections to the broker
 
 To Test it in iex:
-	  Phoenix.RabbitMQ.start_link(:test, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
-	  Phoenix.RabbitMQ.publish :"Elixir.Phoenix.RabbitMQ.PubPool.test", "test", "", "testing plugin"
+
+      Phoenix.RabbitMQ.Supervisor.start_link(:test, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
+      Phoenix.RabbitMQ.Supervisor.publish :"Elixir.Phoenix.RabbitMQ.Supervisor.PubPool.test", "test", "", "testing plugin"   
