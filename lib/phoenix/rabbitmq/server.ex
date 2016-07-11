@@ -2,10 +2,15 @@ defmodule Phoenix.RabbitMQ.Server do
   use GenServer
   use AMQP
   alias Phoenix.RabbitMQ.Supervisor
-  alias Phoenix.RabbitMQ.Consumer, as: Consumer
   require Logger
 
-  @prefetch_count 10
+  ## ------- API
+
+  def publish(exchange, routing_key, payload, options \\ []) do
+    GenServer.call({:publish, exchange, routing_key, payload}, state)
+  end
+
+  ## ------- Server
 
   @moduledoc """
   See `Phoenix.RabbitMQ.Supervisor` for details and configuration options.
@@ -29,69 +34,20 @@ defmodule Phoenix.RabbitMQ.Server do
             node_ref: :crypto.strong_rand_bytes(16),
             opts: opts}}
   end
-
-  def handle_call({:subscribe, pid, topic, opts}, _from, state) do
-    link = Keyword.get(opts, :link, false)
-
-    has_key = case Dict.get(state.subs, topic) do
-                {pids, size} when size > 0 -> Dict.has_key?(pids, pid)
-                _                          -> false
-              end
-
-    unless has_key do
-      {:ok, consumer_pid} = Consumer.start(state.conn_pool_name,
-                                           state.exchange, topic,
-                                           pid,
-                                           state.node_ref,
-                                           link)
-      Process.monitor(consumer_pid)
-
-      if link, do: Process.link(pid)
-
-      {:reply, :ok, %{state | subs: add_subscriber(state.subs, pid, topic, consumer_pid),
-                              cons: Dict.put(state.cons, consumer_pid, {topic, pid})}}
-    end
-  end
-
-  def handle_call({:unsubscribe, pid, topic}, _from, state) do
-    case Dict.fetch(state.subs, topic) do
-      {:ok, {pids, _size}} ->
-        case Dict.fetch(pids, pid) do
-          {:ok, consumer_pid} ->
-            :ok = Consumer.stop(consumer_pid)
-            {:reply, :ok, %{state | subs: delete_subscriber(state.subs, pid, topic)}}
-          :error ->
-            {:reply, :ok, state}
-        end
-      :error ->
-        {:reply, :ok, state}
+  
+  def handle_call({:publish, exchange, routing_key, msg}, state) do
+    case Supervisor.publish(state.pub_pool_name,
+                          exchange,
+                          routing_key,
+                          :erlang.term_to_binary({state.node_ref, msg}),
+                          content_type: "application/x-erlang-binary") do
+      :ok              -> {:reply, :ok, state}
+      {:error, reason} -> {:reply, {:error, reason}, state}
     end
   end
 
   def handle_call(:state, _from, state) do
     {:reply, state, state}
-  end
-
-  def handle_call({:subscribers, topic}, _from, state) do
-    case Dict.get(state.subs, topic, {HashDict.new, 0}) do
-      {pids, size} when size > 0 -> {:reply, Dict.keys(pids), state}
-      {_, 0}                     -> {:reply, [], state}
-    end
-  end
-
-  def handle_call({:checkout, _from_pid, _stat}, _from, state) do
-    
-  end
-
-  def handle_call({:broadcast, from_pid, topic, msg}, _from, state) do
-    case Supervisor.publish(state.pub_pool_name,
-                          state.exchange,
-                          topic,
-                          :erlang.term_to_binary({state.node_ref, from_pid, msg}),
-                          content_type: "application/x-erlang-binary") do
-      :ok              -> {:reply, :ok, state}
-      {:error, reason} -> {:reply, {:error, reason}, state}
-    end
   end
 
   def handle_info({:DOWN, _ref, :process, pid,  _reason}, state) do
@@ -109,27 +65,6 @@ defmodule Phoenix.RabbitMQ.Server do
   def handle_info({:EXIT, _pid, _reason}, state) do
     # Ignore subscriber exiting; the Consumer will monitor it
     {:noreply, state}
-  end
-
-  defp add_subscriber(subs, pid, topic, consumer_pid) do
-    subs
-    |> Dict.put_new(topic, {HashDict.new, 0})
-    |> Dict.update!(topic, fn {dict, size} -> {Dict.put_new(dict, pid, consumer_pid), size + 1} end)
-  end
-
-  defp delete_subscriber(subs, pid, topic) do
-    case Dict.fetch(subs, topic) do
-      {:ok, {pids, size}} ->
-        {pids, size} = {Dict.delete(pids, pid), size - 1}
-
-        if size > 0 do
-          Dict.put(subs, topic, pids)
-        else
-          Dict.delete(subs, topic)
-        end
-      :error ->
-        subs
-    end
   end
 
   defp rabbitmq_namespace(server_name) do

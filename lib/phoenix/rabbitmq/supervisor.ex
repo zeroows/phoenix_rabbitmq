@@ -3,13 +3,16 @@ defmodule Phoenix.RabbitMQ.Supervisor do
   use AMQP
   require Logger
 
-  @host Application.get_env(:phoenix_rabbitmq, :host)
-  @port Application.get_env(:phoenix_rabbitmq, :port)
-  @username Application.get_env(:phoenix_rabbitmq, :username)
-  @password Application.get_env(:phoenix_rabbitmq, :password)
-  @virtual_host Application.get_env(:phoenix_rabbitmq, :virtual_host)
-  @pool_size Application.get_env(:phoenix_rabbitmq, :pool_size)
+  # @host Application.get_env(:phoenix_rabbitmq, :host)
+  # @port Application.get_env(:phoenix_rabbitmq, :port)
+  # @username Application.get_env(:phoenix_rabbitmq, :username)
+  # @password Application.get_env(:phoenix_rabbitmq, :password)
+  # @virtual_host Application.get_env(:phoenix_rabbitmq, :virtual_host)
+  # @pool_size Application.get_env(:phoenix_rabbitmq, :pool_size)
 
+  @otp_app Application.get_all_env(:phoenix_rabbitmq)
+  @pool_size 10
+  
   @moduledoc """
   The Supervisor for the RabbitMQ Client
 
@@ -51,16 +54,16 @@ defmodule Phoenix.RabbitMQ.Supervisor do
   def start_link(name, opts \\ []) do
     supervisor_name = Module.concat(__MODULE__, name)
 
-    config_opts = [
-      host: opts[:host] || @host,
-      port: opts[:port] || @port,
-      username: opts[:username] || @username,
-      password: opts[:password] || @password,
-      virtual_host: opts[:virtual_host] || @virtual_host,
-      pool_size: opts[:pool_size] || @pool_size
-    ]
+    # config_opts = [
+    #   host: opts[:host] || @host,
+    #   port: opts[:port] || @port,
+    #   username: opts[:username] || @username,
+    #   password: opts[:password] || @password,
+    #   virtual_host: opts[:virtual_host] || @virtual_host,
+    #   pool_size: opts[:pool_size] || @pool_size
+    # ]
 
-    connection_opts = opts || config_opts
+    connection_opts = opts || @otp_app
     Supervisor.start_link(__MODULE__, [name, connection_opts], name: supervisor_name)
   end
 
@@ -71,7 +74,7 @@ defmodule Phoenix.RabbitMQ.Supervisor do
     conn_pool_opts = [
       name: {:local, conn_pool_name},
       worker_module: Phoenix.RabbitMQ.Conn,
-      size: opts[:pool_size] || 10,
+      size: opts[:pool_size] || @pool_size,
       strategy: :fifo,
       max_overflow: 0
     ]
