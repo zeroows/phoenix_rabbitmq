@@ -21,6 +21,16 @@ use Mix.Config
 #     config :logger, level: :info
 #
 
+<<<<<<< HEAD
+=======
+config :phoenix_rabbitmq, 
+  host: "localhost",
+  port: 5672,
+  username: "guest", 
+  password: "guest", 
+  pool_size: 10
+
+>>>>>>> 48af496fb134da8ba009ec049404313b1259e9bd
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.

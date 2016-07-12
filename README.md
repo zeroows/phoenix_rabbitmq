@@ -7,6 +7,7 @@ next, add `:phoenix_rabbitmq` to your deps:
       defp deps do
         [
          {:phoenix_rabbitmq, git: "git@bitbucket.org:zeroows/phoenixrabbitmq.git"},
+         {:phoenix_rabbitmq, git: "git://github.com/zeroows/phoenix_rabbitmq.git"},
         ...]
       end
 
