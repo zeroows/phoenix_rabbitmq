@@ -53,12 +53,6 @@ defmodule PhoenixRabbitmq do
 
   def start_link(name, opts \\ []) do
     Supervisor.start_link(__MODULE__, [name, opts], name: PhoenixRabbitmq.Supervisor)
-    start_link(PhoenixRabbitmq.Server, [])
-  end
-
-  def start_link(name, opts \\ []) do
-    connection_opts = opts || @otp_app
-    Supervisor.start_link(__MODULE__, [name, connection_opts], name: PhoenixRabbitmq.Supervisor)
   end
 
   def init([name, opts]) do
