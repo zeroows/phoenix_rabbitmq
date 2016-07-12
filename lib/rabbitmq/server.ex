@@ -31,7 +31,7 @@ defmodule PhoenixRabbitmq.Server do
             opts: opts}}
   end
   
-  def handle_call({:publish, exchange, routing_key, payload}, state) do
+  def handle_call({:publish, exchange, routing_key, payload}, _from, state) do
     case PhoenixRabbitmq.publish(state.pub_pool_name,
                           exchange,
                           routing_key,
@@ -40,10 +40,6 @@ defmodule PhoenixRabbitmq.Server do
       :ok              -> {:reply, :ok, state}
       {:error, reason} -> {:reply, {:error, reason}, state}
     end
-  end
-
-  def handle_call({:publish, exchange, routing_key, payload}) do
-    Logger.info "Got the message"
   end
 
   def handle_call(:state, _from, state) do

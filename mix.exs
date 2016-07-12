@@ -18,7 +18,8 @@ defmodule PhoenixRabbitmq.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :amqp, :poolboy]]
+    [applications: [:logger, :amqp, :poolboy],
+     mod: {PhoenixRabbitmq, []}]
   end
 
   # Dependencies can be Hex packages:

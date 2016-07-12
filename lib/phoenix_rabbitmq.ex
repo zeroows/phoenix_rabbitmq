@@ -1,6 +1,7 @@
 defmodule PhoenixRabbitmq do
   use Supervisor
   use AMQP
+  use Application
   require Logger
 
 
@@ -46,11 +47,13 @@ defmodule PhoenixRabbitmq do
       PhoenixRabbitmq.publish :"Elixir.Phoenix.RabbitMQ.PubPool.test", "test", "", "testing plugin"
   """
 
-  def start_link(name, opts \\ []) do
-    supervisor_name = Module.concat(__MODULE__, name)
+  def start(_type, _args) do
+    start_link(PhoenixRabbitmq.Server, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
+  end
 
+  def start_link(name, opts \\ []) do
     connection_opts = opts || @otp_app
-    Supervisor.start_link(__MODULE__, [name, connection_opts], name: supervisor_name)
+    Supervisor.start_link(__MODULE__, [name, connection_opts], name: PhoenixRabbitmq.Supervisor)
   end
 
   def init([name, opts]) do
