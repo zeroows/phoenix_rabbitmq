@@ -44,11 +44,11 @@ defmodule PhoenixRabbitmq do
   To Test it in iex:
 
       PhoenixRabbitmq.start_link(:test, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
-      PhoenixRabbitmq.publish :"Elixir.Phoenix.RabbitMQ.PubPool.test", "test", "", "testing plugin"
+      PhoenixRabbitmq.Server.publish "test", "", "testing plugin"
   """
 
   def start(_type, _args) do
-    start_link(PhoenixRabbitmq.Server, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
+    start_link(PhoenixRabbitmq.Server, [])
   end
 
   def start_link(name, opts \\ []) do

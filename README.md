@@ -32,5 +32,4 @@ finally, add `:phoenix_rabbitmq` to your applications:
 To Test it in iex:
 
       {:ok, pid} = PhoenixRabbitmq.start_link(:test, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
-      PhoenixRabbitmq.publish :"Elixir.PhoenixRabbitmq.test", "test", "", "testing plugin"   
-      PhoenixRabbitmq.publish :"Elixir.PhoenixRabbitmq.PubPool.test", "test", "", "testing plugin"   
+      PhoenixRabbitmq.Server.publish "test", "", "testing plugin"   
