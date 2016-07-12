@@ -48,12 +48,11 @@ defmodule PhoenixRabbitmq do
   """
 
   def start(_type, _args) do
-    start_link(PhoenixRabbitmq.Server, [])
+    start_link(PhoenixRabbitmq.Server, @otp_app)
   end
 
   def start_link(name, opts \\ []) do
-    connection_opts = opts || @otp_app
-    Supervisor.start_link(__MODULE__, [name, connection_opts], name: PhoenixRabbitmq.Supervisor)
+    Supervisor.start_link(__MODULE__, [name, opts], name: PhoenixRabbitmq.Supervisor)
   end
 
   def init([name, opts]) do

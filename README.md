@@ -29,11 +29,16 @@ finally, add `:phoenix_rabbitmq` to your applications:
   * `connection_timeout` - The connection timeout in milliseconds (defaults to `infinity`);
   * `pool_size` - Number of active connections to the broker
 
+Add this to you env config file
+
+      config :phoenix_rabbitmq, 
+        host: "localhost",
+        port: 5672,
+        username: "rabbitmq", 
+        password: "rabbitmq", 
+        pool_size: 10
+
 To Test it in iex:
 
       {:ok, pid} = PhoenixRabbitmq.start_link(:test, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
-<<<<<<< HEAD
-      PhoenixRabbitmq.Server.publish "test", "", "testing plugin"   
-=======
       PhoenixRabbitmq.Server.publish "test", "", "testing plugin"
->>>>>>> fd1de81f68e5b13f5e527a553caa552be0ed48f1
