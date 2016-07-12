@@ -6,7 +6,7 @@ next, add `:phoenix_rabbitmq` to your deps:
 
       defp deps do
         [
-         {:phoenix_rabbitmq, git: "git://github.com/zeroows/phoenix_rabbitmq.git"},
+         {:phoenix_rabbitmq, git: "git@bitbucket.org:zeroows/phoenixrabbitmq.git"},
         ...]
       end
 
@@ -32,5 +32,4 @@ finally, add `:phoenix_rabbitmq` to your applications:
 To Test it in iex:
 
       {:ok, pid} = PhoenixRabbitmq.start_link(:test, [username: "rabbitmq", password: "rabbitmq", pool_size: 1])
-      PhoenixRabbitmq.publish :"Elixir.PhoenixRabbitmq.test", "test", "", "testing plugin"   
-      PhoenixRabbitmq.publish :"Elixir.PhoenixRabbitmq.PubPool.test", "test", "", "testing plugin"   
+      PhoenixRabbitmq.Server.publish "test", "", "testing plugin"
