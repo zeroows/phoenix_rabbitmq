@@ -32,8 +32,11 @@ defmodule PhoenixRabbitmq.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:poolboy, "~> 1.5"},
-     {:amqp, "~> 0.1.4"}]
+    [ 
+      {:poolboy, "~> 1.5"},
+      {:amqp, "~> 0.1.4"},
+      {:poison, "~> 2.0"}
+    ]
   end
 
   defp description do

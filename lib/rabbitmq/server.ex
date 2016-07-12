@@ -9,6 +9,10 @@ defmodule PhoenixRabbitmq.Server do
     GenServer.call(PhoenixRabbitmq.Server, {:publish, exchange, routing_key, payload})
   end
 
+  def publish_json(exchange, routing_key, payload, opts \\ []) do
+    GenServer.call(PhoenixRabbitmq.Server, {:publish_json, exchange, routing_key, payload, opts})
+  end
+
 
   @moduledoc """
   See `PhoenixRabbitmq` for details and configuration options.
@@ -41,6 +45,18 @@ defmodule PhoenixRabbitmq.Server do
       {:error, reason} -> {:reply, {:error, reason}, state}
     end
   end
+
+  def handle_call({:publish_json, exchange, routing_key, payload, opts}, _from, state) do
+    case PhoenixRabbitmq.publish(state.pub_pool_name,
+                          exchange,
+                          routing_key,
+                          Poison.encode!(payload),
+                          [content_type: "application/json"] ++ opts) do
+      :ok              -> {:reply, :ok, state}
+      {:error, reason} -> {:reply, {:error, reason}, state}
+    end
+  end
+
 
   def handle_call(:state, _from, state) do
     {:reply, state, state}
