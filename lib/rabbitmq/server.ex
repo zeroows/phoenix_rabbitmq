@@ -65,7 +65,7 @@ defmodule PhoenixRabbitmq.Server do
   def handle_info({:DOWN, _ref, :process, pid,  _reason}, state) do
     state =
       case Dict.fetch(state.cons, pid) do
-        {:ok, {topic, _sub_pid}} ->
+        {:ok, {_topic, _sub_pid}} ->
           %{state | cons: Dict.delete(state.cons, pid)}
         :error ->
           state
