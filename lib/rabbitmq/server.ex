@@ -28,7 +28,7 @@ defmodule PhoenixRabbitmq.Server do
   """
   def init([_server_name, conn_pool_name, pub_pool_name, opts]) do
     Process.flag(:trap_exit, true)
-    {:ok, %{cons: HashDict.new,
+    {:ok, %{cons: Map.new,
             conn_pool_name: conn_pool_name,
             pub_pool_name: pub_pool_name,
             node_ref: :crypto.strong_rand_bytes(16),
@@ -64,9 +64,9 @@ defmodule PhoenixRabbitmq.Server do
 
   def handle_info({:DOWN, _ref, :process, pid,  _reason}, state) do
     state =
-      case Dict.fetch(state.cons, pid) do
+      case Map.fetch(state.cons, pid) do
         {:ok, {_topic, _sub_pid}} ->
-          %{state | cons: Dict.delete(state.cons, pid)}
+          %{state | cons: Map.delete(state.cons, pid)}
         :error ->
           state
       end
